@@ -4,13 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 import connectDB from './configs/db.js';
 import {inngest, functions} from './inngest/index.js'
+import {serve} from 'inngest/express';
 
 const app=express();
 
 //console.log("MONGODB_URL:", process.env.MONGODB_URL);
 await connectDB();
 
-//add middleware
+//add middleware 
 app.use(express.json());
 app.use(cors()); 
 
