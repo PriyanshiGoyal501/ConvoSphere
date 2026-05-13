@@ -1,6 +1,6 @@
 import { Inngest, step } from "inngest";
 import User from "../models/User.js";
-import { connection, Connection } from "mongoose";
+import Connection from "mongoose";
 import sendEmail from "../configs/nodeMailer.js";
 
 // Create a client to send and receive events
@@ -48,7 +48,7 @@ const syncUserUpdation = inngest.createFunction(
       full_name:first_name+ ' ' + last_name,
       profile_picture: image_url
     }
-    await User.findByIdAndUpdate(id, updatedUserData)
+    await User.findByIdAndUpdate(id, updateUserData)
     }
 )
 
@@ -60,7 +60,7 @@ const syncUserDeletion = inngest.createFunction(
   },
   async({event})=>{
     const {id}= event.data
-    await User.findByIdAndDelet(id)
+    await User.findByIdAndDelete(id)
  }
 )
 
@@ -68,8 +68,9 @@ const syncUserDeletion = inngest.createFunction(
 
 //Inngest function to send Reminder when a new Connection request is added
 const sendNewConnectionRequestReminder = inngest.createFunction(
-  { id: "send-new-connection-request-reminder"},
-  { event: "app/connection-request"},
+  { id: "send-new-connection-request-reminder",
+  triggers: [{event: "app/connection-request"}],
+  },
   async ({ event, step }) => {
     const {connectionId} = event.data;
 
@@ -87,7 +88,7 @@ const sendNewConnectionRequestReminder = inngest.createFunction(
     
     await sendEmail({
       to: connection.to_user_id.email,
-      subjecxt,
+      subject,
       body
     })
   })
@@ -112,7 +113,7 @@ const sendNewConnectionRequestReminder = inngest.createFunction(
     
     await sendEmail({
       to: connection.to_user_id.email,
-      subjecxt,
+      subject,
       body
     })
 
